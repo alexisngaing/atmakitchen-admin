@@ -1,52 +1,65 @@
-import React from "react";
+import {
+  CreateButton,
+  DateField,
+  DeleteButton,
+  EditButton,
+  List,
+} from "@refinedev/chakra-ui";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef, flexRender } from "@tanstack/react-table";
-import { GetManyResponse, useMany } from "@refinedev/core";
-import {
-  List,
-  ShowButton,
-  EditButton,
-  DeleteButton,
-  DateField,
-} from "@refinedev/chakra-ui";
+import React from "react";
 
 import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  HStack,
   Box,
-  Select,
+  HStack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react";
 
 import { ColumnFilter, ColumnSorter } from "../../components/table";
-import { Pagination } from "../../components/pagination";
-import { FilterElementProps, IPost, IRecipe } from "../../interfaces";
+import { IRecipe } from "../../interfaces";
 
 export const EmployeeList: React.FC = () => {
   const columns = React.useMemo<ColumnDef<IRecipe>[]>(
     () => [
       {
-        id: "id",
-        header: "ID",
-        accessorKey: "id",
+        id: "fullName",
+        header: "Nama Lengkap",
+        accessorKey: "fullName",
         enableColumnFilter: false,
-      },
-      {
-        id: "name",
-        header: "Name",
-        accessorKey: "name",
+        enableSorting: false,
         meta: {
           filterOperator: "contains",
         },
       },
       {
+        id: "email",
+        header: "Email",
+        accessorKey: "email",
+        enableColumnFilter: false,
+        enableSorting: false,
+        meta: {
+          filterOperator: "contains",
+        },
+      },
+      {
+        id: "dob",
+        header: "Tanggal Lahir",
+        accessorKey: "dob",
+        enableColumnFilter: false,
+        enableSorting: false,
+        cell: function render({ getValue }) {
+          return <DateField value={getValue() as string} />;
+        },
+      },
+      {
         id: "actions",
-        header: "Actions",
+        header: "Aksi",
         accessorKey: "id",
         enableColumnFilter: false,
         enableSorting: false,
@@ -62,6 +75,9 @@ export const EmployeeList: React.FC = () => {
                 hideText
                 size="sm"
                 recordItemId={getValue() as number}
+                confirmTitle="Hapus karyawan ini?"
+                confirmOkText="Ya"
+                confirmCancelText="Tidak"
               />
             </HStack>
           );
@@ -94,7 +110,10 @@ export const EmployeeList: React.FC = () => {
   });
 
   return (
-    <List>
+    <List
+      title={"Daftar Karyawan"}
+      headerButtons={() => <CreateButton>Tambah</CreateButton>}
+    >
       <TableContainer>
         <Table variant="simple" whiteSpace="pre-line">
           <Thead>
@@ -143,11 +162,11 @@ export const EmployeeList: React.FC = () => {
           </Tbody>
         </Table>
       </TableContainer>
-      <Pagination
+      {/* <Pagination
         current={current}
         pageCount={pageCount}
         setCurrent={setCurrent}
-      />
+      /> */}
     </List>
   );
 };

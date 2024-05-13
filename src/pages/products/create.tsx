@@ -1,4 +1,3 @@
-import { Create } from "@refinedev/chakra-ui";
 import {
   FormControl,
   FormErrorMessage,
@@ -6,6 +5,7 @@ import {
   Input,
   Select,
 } from "@chakra-ui/react";
+import { Create } from "@refinedev/chakra-ui";
 import { useSelect } from "@refinedev/core";
 import { useForm } from "@refinedev/react-hook-form";
 
@@ -32,7 +32,11 @@ export const ProductCreate = () => {
   });
 
   return (
-    <Create isLoading={formLoading} saveButtonProps={saveButtonProps}>
+    <Create
+      isLoading={formLoading}
+      saveButtonProps={{ children: "Simpan", ...saveButtonProps }}
+      title={"Tambah Produk"}
+    >
       <FormControl mb="3" isInvalid={!!errors?.name}>
         <FormLabel>Nama</FormLabel>
         <Input
@@ -66,11 +70,23 @@ export const ProductCreate = () => {
         />
         <FormErrorMessage>{`${errors.status?.message}`}</FormErrorMessage>
       </FormControl>
+      <FormControl mb="3" isInvalid={!!errors?.quota}>
+        <FormLabel>Kuota</FormLabel>
+        <Input
+          id="quota"
+          type="number"
+          {...register("quota", {
+            required: "Kuota harus diisi",
+            valueAsNumber: true,
+          })}
+        />
+        <FormErrorMessage>{`${errors.status?.message}`}</FormErrorMessage>
+      </FormControl>
       <FormControl mb="3" isInvalid={!!errors?.categoryId}>
-        <FormLabel>Category</FormLabel>
+        <FormLabel>Kategori</FormLabel>
         <Select
           id="categoryId"
-          placeholder="Select Category"
+          placeholder="Pilih Kategori"
           {...register("categoryId", {
             required: "Category is required",
           })}
@@ -87,7 +103,7 @@ export const ProductCreate = () => {
         <FormLabel>Resep</FormLabel>
         <Select
           id="recipeId"
-          placeholder="Select Resep"
+          placeholder="Pilih Resep"
           {...register("recipeId", {
             required: "Resep is required",
           })}

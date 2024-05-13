@@ -1,163 +1,31 @@
-import {
-  AuthProvider,
-  Authenticated,
-  GitHubBanner,
-  Refine,
-} from "@refinedev/core";
+import { ChakraProvider, Flex, Text } from "@chakra-ui/react";
 import {
   AuthPage,
-  ThemedLayoutV2,
   ErrorComponent,
   RefineThemes,
-  useNotificationProvider,
+  ThemedHeaderV2,
+  ThemedLayoutV2,
   ThemedSiderV2,
 } from "@refinedev/chakra-ui";
-import { Center, ChakraProvider, Flex, Text, color } from "@chakra-ui/react";
-import dataProvider from "@refinedev/simple-rest";
+import { Authenticated, Refine } from "@refinedev/core";
 import routerProvider, {
-  NavigateToResource,
   CatchAllNavigate,
-  UnsavedChangesNotifier,
   DocumentTitleHandler,
+  NavigateToResource,
+  UnsavedChangesNotifier,
 } from "@refinedev/react-router-v6";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import { IconBrandGoogle, IconBrandGithub } from "@tabler/icons-react";
+import dataProvider from "@refinedev/simple-rest";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 
-import { PostCreate, PostEdit, PostList, PostShow } from "./pages";
+import { PackageSearchIcon, PersonStandingIcon } from "lucide-react";
+import { EmployeeCreate, EmployeeEdit, EmployeeList } from "./pages/employees";
+import { HamperCreate, HamperList } from "./pages/hampers";
+import { IngredientList } from "./pages/ingredients";
 import { ProductCreate, ProductEdit, ProductList } from "./pages/products";
 import { RecipeList } from "./pages/recipes";
-import { IngredientList } from "./pages/ingredients";
-import { RecipeIngredientList } from "./pages/recipes-ingredients";
-import { HamperList } from "./pages/hampers";
-import { EmployeeList } from "./pages/employees";
-import { CustodianList } from "./pages/custodians";
-
-/**
- *  mock auth credentials to simulate authentication
- */
-const authCredentials = {
-  email: "demo@refine.dev",
-  password: "demodemo",
-};
+import { authProvider } from "./providers/auth-provider";
 
 const App: React.FC = () => {
-  const authProvider: AuthProvider = {
-    login: async ({ providerName, email }) => {
-      if (providerName === "google") {
-        window.location.href = "https://accounts.google.com/o/oauth2/v2/auth";
-        return {
-          success: true,
-        };
-      }
-
-      if (providerName === "github") {
-        window.location.href = "https://github.com/login/oauth/authorize";
-        return {
-          success: true,
-        };
-      }
-
-      if (email === authCredentials.email) {
-        localStorage.setItem("email", email);
-        return {
-          success: true,
-          redirectTo: "/",
-        };
-      }
-
-      return {
-        success: false,
-        error: {
-          message: "Login failed",
-          name: "Invalid email or password",
-        },
-      };
-    },
-    register: async (params) => {
-      if (params.email === authCredentials.email && params.password) {
-        localStorage.setItem("email", params.email);
-        return {
-          success: true,
-          redirectTo: "/",
-        };
-      }
-      return {
-        success: false,
-        error: {
-          message: "Register failed",
-          name: "Invalid email or password",
-        },
-      };
-    },
-    updatePassword: async (params) => {
-      if (params.password === authCredentials.password) {
-        //we can update password here
-        return {
-          success: true,
-        };
-      }
-      return {
-        success: false,
-        error: {
-          message: "Update password failed",
-          name: "Invalid password",
-        },
-      };
-    },
-    forgotPassword: async (params) => {
-      if (params.email === authCredentials.email) {
-        //we can send email with reset password link here
-        return {
-          success: true,
-        };
-      }
-      return {
-        success: false,
-        error: {
-          message: "Forgot password failed",
-          name: "Invalid email",
-        },
-      };
-    },
-    logout: async () => {
-      localStorage.removeItem("email");
-      return {
-        success: true,
-        redirectTo: "/login",
-      };
-    },
-    onError: async (error) => {
-      if (error.response?.status === 401) {
-        return {
-          logout: true,
-        };
-      }
-
-      return { error };
-    },
-    check: async () =>
-      localStorage.getItem("email")
-        ? {
-            authenticated: true,
-          }
-        : {
-            authenticated: false,
-            error: {
-              message: "Check failed",
-              name: "Not authenticated",
-            },
-            logout: true,
-            redirectTo: "/login",
-          },
-    getPermissions: async () => ["admin"],
-    getIdentity: async () => ({
-      id: 1,
-      name: "Jane Doe",
-      avatar:
-        "https://unsplash.com/photos/IWLOvomUmWU/download?force=true&w=640",
-    }),
-  };
-
   return (
     <BrowserRouter>
       <ChakraProvider theme={RefineThemes.Green}>
@@ -165,19 +33,19 @@ const App: React.FC = () => {
           dataProvider={dataProvider("https://api.atmakitchen.ninja/v1")}
           authProvider={authProvider}
           routerProvider={routerProvider}
-          notificationProvider={useNotificationProvider()}
+          // Disabled for now
+          // notificationProvider={useNotificationProvider()}
           resources={[
-            {
-              name: "posts",
-              list: "/posts",
-              edit: "/posts/edit/:id",
-              create: "/posts/create",
-            },
             {
               name: "products",
               list: "/products",
               edit: "/products/edit/:id",
               create: "/products/create",
+              identifier: "produk",
+              meta: {
+                label: "Produk",
+                icon: <PackageSearchIcon size={24} />,
+              },
             },
             {
               name: "recipes",
@@ -192,32 +60,27 @@ const App: React.FC = () => {
               create: "/ingredients/create",
             },
             {
-              name: "recipes_ingredients",
-              list: "/products",
-              edit: "/recipes_ingredients/edit/:id",
-              create: "/recipes_ingredients/create",
-            },
-            {
               name: "hampers",
-              list: "/products",
+              list: "/hampers",
               edit: "/hampers/edit/:id",
               create: "/hampers/create",
             },
             {
               name: "employees",
-              list: "/products",
+              list: "/employees",
               edit: "/employees/edit/:id",
               create: "/employees/create",
+              identifier: "karyawan",
+              meta: {
+                label: "Karyawan",
+                icon: <PersonStandingIcon size={24} />,
+              },
             },
             {
               name: "custodians",
               list: "/products",
               edit: "/custodians/edit/:id",
               create: "/custodians/create",
-            },
-            {
-              name: "categories",
-              list: "/categories",
             },
           ]}
           options={{
@@ -233,23 +96,24 @@ const App: React.FC = () => {
                   fallback={<CatchAllNavigate to="/login" />}
                 >
                   <ThemedLayoutV2
+                    Header={() => <ThemedHeaderV2 />}
+                    Title={() => "Atma Kitchen"}
                     Sider={() => (
                       <ThemedSiderV2
                         Title={({ collapsed }) => (
-                          <Flex>
-                            <Center w="160px">
-                              <Text as="b" color="lightgreen" fontSize="xl">
-                                Atma Kitchen
-                              </Text>
-                            </Center>
+                          <Flex w="100%" justifyContent="center">
+                            <Text as="b" color="lightgreen" fontSize="xl">
+                              {collapsed ? "AK" : "Atma Kitchen"}
+                            </Text>
                           </Flex>
                         )}
                         render={({ items, logout, collapsed }) => {
                           return (
                             <>
-                              <div>My Custom Element</div>
-                              {items}
-                              {logout}
+                              <Flex flexDirection="column">
+                                {items}
+                                {logout}
+                              </Flex>
                             </>
                           );
                         }}
@@ -261,15 +125,6 @@ const App: React.FC = () => {
                 </Authenticated>
               }
             >
-              <Route index element={<NavigateToResource resource="posts" />} />
-
-              <Route path="/posts">
-                <Route index element={<PostList />} />
-                <Route path="create" element={<PostCreate />} />
-                <Route path="edit/:id" element={<PostEdit />} />
-                <Route path="show/:id" element={<PostShow />} />
-              </Route>
-
               <Route
                 index
                 element={<NavigateToResource resource="products" />}
@@ -277,9 +132,8 @@ const App: React.FC = () => {
 
               <Route path="/products">
                 <Route index element={<ProductList />} />
-                <Route path="create" element={<ProductCreate />}></Route>
+                <Route path="create" element={<ProductCreate />} />
                 <Route path="edit/:id" element={<ProductEdit />} />
-                {/* <Route path="show/:id" element={<Show />} /> */}
               </Route>
 
               <Route
@@ -304,22 +158,12 @@ const App: React.FC = () => {
 
               <Route
                 index
-                element={<NavigateToResource resource="recipes_ingredients" />}
-              />
-
-              <Route path="/recipes_ingredients">
-                <Route index element={<RecipeIngredientList />} />
-                <Route path="create" element></Route>
-              </Route>
-
-              <Route
-                index
                 element={<NavigateToResource resource="hampers" />}
               />
 
               <Route path="/hampers">
-                <Route index element={<RecipeList />} />
-                <Route path="create" element></Route>
+                <Route index element={<HamperList />} />
+                <Route path="create" element={<HamperCreate />} />
               </Route>
 
               <Route
@@ -328,8 +172,9 @@ const App: React.FC = () => {
               />
 
               <Route path="/employees">
-                <Route index element={<RecipeList />} />
-                <Route path="create" element></Route>
+                <Route index element={<EmployeeList />} />
+                <Route path="create" element={<EmployeeCreate />}></Route>
+                <Route path="edit/:id" element={<EmployeeEdit />} />
               </Route>
             </Route>
 
@@ -345,53 +190,11 @@ const App: React.FC = () => {
                 element={
                   <AuthPage
                     type="login"
-                    formProps={{
-                      defaultValues: {
-                        ...authCredentials,
-                      },
-                    }}
-                    providers={[
-                      {
-                        name: "google",
-                        label: "Sign in with Google",
-                        icon: <IconBrandGoogle />,
-                      },
-                      {
-                        name: "github",
-                        label: "Sign in with GitHub",
-                        icon: <IconBrandGithub />,
-                      },
-                    ]}
+                    rememberMe={false}
+                    registerLink={false}
+                    forgotPasswordLink={false}
                   />
                 }
-              />
-              <Route
-                path="/register"
-                element={
-                  <AuthPage
-                    type="register"
-                    providers={[
-                      {
-                        name: "google",
-                        label: "Sign in with Google",
-                        icon: <IconBrandGoogle />,
-                      },
-                      {
-                        name: "github",
-                        label: "Sign in with GitHub",
-                        icon: <IconBrandGithub />,
-                      },
-                    ]}
-                  />
-                }
-              />
-              <Route
-                path="/forgot-password"
-                element={<AuthPage type="forgotPassword" />}
-              />
-              <Route
-                path="/update-password"
-                element={<AuthPage type="updatePassword" />}
               />
             </Route>
 

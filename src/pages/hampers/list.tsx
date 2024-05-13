@@ -1,34 +1,26 @@
-import React from "react";
+import { DeleteButton, EditButton, List } from "@refinedev/chakra-ui";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef, flexRender } from "@tanstack/react-table";
-import { GetManyResponse, useMany } from "@refinedev/core";
-import {
-  List,
-  ShowButton,
-  EditButton,
-  DeleteButton,
-  DateField,
-} from "@refinedev/chakra-ui";
+import React from "react";
 
 import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  HStack,
   Box,
-  Select,
+  HStack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react";
 
-import { ColumnFilter, ColumnSorter } from "../../components/table";
 import { Pagination } from "../../components/pagination";
-import { FilterElementProps, IPost, IRecipe } from "../../interfaces";
+import { ColumnFilter, ColumnSorter } from "../../components/table";
+import { IHamper } from "../../interfaces";
 
 export const HamperList: React.FC = () => {
-  const columns = React.useMemo<ColumnDef<IRecipe>[]>(
+  const columns = React.useMemo<ColumnDef<IHamper>[]>(
     () => [
       {
         id: "id",
@@ -37,11 +29,36 @@ export const HamperList: React.FC = () => {
         enableColumnFilter: false,
       },
       {
+        id: "image",
+        header: "Gambar",
+        accessorKey: "image",
+        cell: function render({ getValue }) {
+          return (
+            <Box
+              w="50px"
+              h="50px"
+              bgImage={`url(${getValue()})`}
+              bgSize="cover"
+              bgPos="center"
+              borderRadius="md"
+            />
+          );
+        },
+      },
+      {
         id: "name",
-        header: "Name",
+        header: "Nama Hamper",
         accessorKey: "name",
         meta: {
           filterOperator: "contains",
+        },
+      },
+      {
+        id: "price",
+        header: "Harga",
+        accessorKey: "price",
+        meta: {
+          filterOperator: "eq",
         },
       },
       {

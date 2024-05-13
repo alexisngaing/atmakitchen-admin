@@ -13,11 +13,13 @@ export interface ICategory {
   name: string;
 }
 
+export * from "./relations/rolesRelations";
 export interface IProduct {
   id: string;
   name: string;
   price: number;
   quantity: number;
+  quota: number;
   category: { id: number };
 }
 
@@ -33,9 +35,20 @@ export interface IIngredient {
   amountAvailable: number;
 }
 
-export interface IProductCategory {
+export interface IEmployee {
+  id: string;
+  fullName: string;
+  email: string;
+  password: string;
+  dob: Date;
+}
+
+export interface IHamper {
   id: string;
   name: string;
+  image: string;
+  price: number;
+  product: { id: number };
 }
 
 export interface ColumnButtonProps {

@@ -1,79 +1,61 @@
-import { useEffect } from "react";
-import { Edit } from "@refinedev/chakra-ui";
 import {
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
-  Select,
 } from "@chakra-ui/react";
-import { useSelect } from "@refinedev/core";
+import { Edit } from "@refinedev/chakra-ui";
 import { useForm } from "@refinedev/react-hook-form";
 
-import { IPost } from "../../interfaces";
+import { IEmployee } from "../../interfaces";
 
-export const PostEdit = () => {
+export const EmployeeEdit = () => {
   const {
     refineCore: { formLoading, queryResult },
     saveButtonProps,
     register,
     formState: { errors },
     resetField,
-  } = useForm<IPost>();
-
-  const { options } = useSelect({
-    resource: "categories",
-
-    defaultValue: queryResult?.data?.data.category.id,
-    queryOptions: { enabled: !!queryResult?.data?.data.category.id },
-  });
-
-  useEffect(() => {
-    resetField("category.id");
-  }, [options]);
+  } = useForm<IEmployee>();
 
   return (
-    <Edit isLoading={formLoading} saveButtonProps={saveButtonProps}>
-      <FormControl mb="3" isInvalid={!!errors?.title}>
-        <FormLabel>Title</FormLabel>
+    <Edit
+      isLoading={formLoading}
+      saveButtonProps={{ children: "Simpan", ...saveButtonProps }}
+      headerButtons={() => undefined}
+    >
+      <FormControl mb="3" isInvalid={!!errors?.fullName}>
+        <FormLabel>Nama Lengkap</FormLabel>
         <Input
-          id="title"
+          id="fullName"
           type="text"
-          {...register("title", { required: "Title is required" })}
+          {...register("fullName", { required: "Nama harus diisi" })}
         />
         <FormErrorMessage>{`${errors.title?.message}`}</FormErrorMessage>
       </FormControl>
-      <FormControl mb="3" isInvalid={!!errors?.status}>
-        <FormLabel>Status</FormLabel>
-        <Select
-          id="content"
-          placeholder="Select Post Status"
-          {...register("status", {
-            required: "Status is required",
+      <FormControl mb="3" isInvalid={!!errors?.email}>
+        <FormLabel>Email</FormLabel>
+        <Input
+          id="email"
+          type="email"
+          {...register("email", {
+            required: "Email harus diisi",
+            pattern: {
+              value: /\S+@\S+\.\S+/,
+              message: "Invalid email address",
+            },
           })}
-        >
-          <option>published</option>
-          <option>draft</option>
-          <option>rejected</option>
-        </Select>
-        <FormErrorMessage>{`${errors.status?.message}`}</FormErrorMessage>
+        />
+        <FormErrorMessage>{`${errors.email?.message}`}</FormErrorMessage>
       </FormControl>
-      <FormControl mb="3" isInvalid={!!errors?.categoryId}>
-        <FormLabel>Category</FormLabel>
-        <Select
-          id="ca"
-          placeholder="Select Category"
-          {...register("category.id", {
-            required: true,
-          })}
-        >
-          {options?.map((option) => (
-            <option value={option.value} key={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-        <FormErrorMessage>{`${errors.categoryId?.message}`}</FormErrorMessage>
+      <FormControl mb="3" isInvalid={!!errors?.dob}>
+        <FormLabel>Tanggal Lahir</FormLabel>
+        <Input
+          id="dob"
+          type="date"
+          {...register("dob", { required: "Tanggal lahir harus diisi" })}
+        />
+        <FormErrorMessage>{`${errors.title?.message}`}</FormErrorMessage>
       </FormControl>
     </Edit>
   );

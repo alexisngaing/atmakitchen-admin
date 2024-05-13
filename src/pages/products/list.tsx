@@ -1,36 +1,27 @@
-import React from "react";
+import {
+  CreateButton,
+  DeleteButton,
+  EditButton,
+  List,
+} from "@refinedev/chakra-ui";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef, flexRender } from "@tanstack/react-table";
-import { GetManyResponse, useMany } from "@refinedev/core";
-import {
-  List,
-  ShowButton,
-  EditButton,
-  DeleteButton,
-  DateField,
-} from "@refinedev/chakra-ui";
+import React from "react";
 
 import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  HStack,
   Box,
-  Select,
+  HStack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react";
 
 import { ColumnFilter, ColumnSorter } from "../../components/table";
-import { Pagination } from "../../components/pagination";
-import {
-  FilterElementProps,
-  IProductCategory,
-  IPost,
-  IProduct,
-} from "../../interfaces";
+import { IProduct } from "../../interfaces";
 
 export const ProductList: React.FC = () => {
   const columns = React.useMemo<ColumnDef<IProduct>[]>(
@@ -39,20 +30,22 @@ export const ProductList: React.FC = () => {
         id: "name",
         header: "Nama Produk",
         accessorKey: "name",
-        meta: {
-          filterOperator: "contains",
-        },
+        enableColumnFilter: false,
+        enableSorting: false,
       },
       {
         id: "productCategory.id",
-        header: "Category",
+        header: "Kategori",
         enableColumnFilter: false,
+        enableSorting: false,
         accessorKey: "productCategory.name",
       },
       {
         id: "price",
         header: "Harga",
         accessorKey: "price",
+        enableColumnFilter: false,
+        enableSorting: false,
         cell: function render({ getValue }) {
           return `Rp ${getValue()}`;
         },
@@ -61,10 +54,19 @@ export const ProductList: React.FC = () => {
         id: "quantity",
         header: "Stok",
         accessorKey: "quantity",
+        enableColumnFilter: false,
+        enableSorting: false,
+      },
+      {
+        id: "quota",
+        header: "Kuota",
+        accessorKey: "quota",
+        enableColumnFilter: false,
+        enableSorting: false,
       },
       {
         id: "actions",
-        header: "Actions",
+        header: "Aksi",
         accessorKey: "id",
         enableColumnFilter: false,
         enableSorting: false,
@@ -80,6 +82,9 @@ export const ProductList: React.FC = () => {
                 hideText
                 size="sm"
                 recordItemId={getValue() as number}
+                confirmTitle="Hapus produk ini?"
+                confirmOkText="Ya"
+                confirmCancelText="Tidak"
               />
             </HStack>
           );
@@ -111,25 +116,11 @@ export const ProductList: React.FC = () => {
     },
   });
 
-  // const categoryIds = tableData?.data?.map((item) => item.category.id) ?? [];
-  // const { data: categoriesData } = useMany<IProductCategory>({
-  //   resource: "categories",
-  //   ids: categoryIds,
-  //   queryOptions: {
-  //     enabled: categoryIds.length > 0,
-  //   },
-  // });
-
-  // setOptions((prev) => ({
-  //   ...prev,
-  //   meta: {
-  //     ...prev.meta,
-  //     categoriesData,
-  //   },
-  // }));
-
   return (
-    <List>
+    <List
+      title={"Daftar Produk"}
+      headerButtons={() => <CreateButton>Tambah</CreateButton>}
+    >
       <TableContainer>
         <Table variant="simple" whiteSpace="pre-line">
           <Thead>
@@ -178,11 +169,12 @@ export const ProductList: React.FC = () => {
           </Tbody>
         </Table>
       </TableContainer>
-      <Pagination
+      {/* Disabled for now */}
+      {/* <Pagination
         current={current}
         pageCount={pageCount}
         setCurrent={setCurrent}
-      />
+      /> */}
     </List>
   );
 };

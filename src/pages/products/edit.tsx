@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { Edit } from "@refinedev/chakra-ui";
 import {
   FormControl,
   FormErrorMessage,
@@ -7,10 +5,11 @@ import {
   Input,
   Select,
 } from "@chakra-ui/react";
+import { Edit } from "@refinedev/chakra-ui";
 import { useSelect } from "@refinedev/core";
 import { useForm } from "@refinedev/react-hook-form";
 
-import { IProduct, IRecipe, ICategory } from "../../interfaces";
+import { ICategory, IProduct, IRecipe } from "../../interfaces";
 
 export const ProductEdit = () => {
   const {
@@ -33,12 +32,12 @@ export const ProductEdit = () => {
     optionValue: "id",
   });
 
-  // useEffect(() => {
-  //   resetField("categoryId");
-  // }, [categories]);
-
   return (
-    <Edit isLoading={formLoading} saveButtonProps={saveButtonProps}>
+    <Edit
+      isLoading={formLoading}
+      saveButtonProps={{ children: "Simpan", ...saveButtonProps }}
+      headerButtons={() => undefined}
+    >
       <FormControl mb="3" isInvalid={!!errors?.name}>
         <FormLabel>Nama</FormLabel>
         <Input
@@ -66,7 +65,19 @@ export const ProductEdit = () => {
           id="quantity"
           type="number"
           {...register("quantity", {
-            required: "Quantity harus diisi",
+            required: "Stok harus diisi",
+            valueAsNumber: true,
+          })}
+        />
+        <FormErrorMessage>{`${errors.status?.message}`}</FormErrorMessage>
+      </FormControl>
+      <FormControl mb="3" isInvalid={!!errors?.quota}>
+        <FormLabel>Kuota</FormLabel>
+        <Input
+          id="quota"
+          type="number"
+          {...register("quota", {
+            required: "Kuota harus diisi",
             valueAsNumber: true,
           })}
         />
@@ -76,7 +87,7 @@ export const ProductEdit = () => {
         <FormLabel>Category</FormLabel>
         <Select
           id="categoryId"
-          placeholder="Select Category"
+          placeholder="Pilih Kategori"
           {...register("categoryId", {
             required: "Category is required",
           })}
@@ -93,7 +104,7 @@ export const ProductEdit = () => {
         <FormLabel>Resep</FormLabel>
         <Select
           id="recipeId"
-          placeholder="Select Resep"
+          placeholder="Pilih Resep"
           {...register("recipeId", {
             required: "Resep is required",
           })}
